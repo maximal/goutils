@@ -1,0 +1,22 @@
+# IDEs
+.idea/
+.vscode/
+
+# Built Binaries
+dist/
+
+# Test Configs
+config.local.yml
+config.local.yaml
+config.yml
+config.yaml
+
+# Test Results
+*.txt
+*.json
+*.jsonl
+*.influx
+*.tsv
+
+# OS caches
+.DS_Store
