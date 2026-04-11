@@ -12,7 +12,7 @@ if err != nil {
 }
 ```
 
-Then, if you run `systemctl status your-service` you’ll get something like:
+Then, if you run `systemctl status your-service`, you’ll get something like:
 ```plain
 ● your-service.service - Your service description
      Loaded: loaded (/usr/lib/systemd/system/your-service.service; enabled; preset: enabled)
@@ -27,3 +27,11 @@ Then, if you run `systemctl status your-service` you’ll get something like:
              └─777 /opt/your-service/your-service
 ```
 Note the `Status` line.
+
+Your `*.service` file must specify `Type=notify` to enable this functionality:
+```plain
+[Service]
+Type=notify
+ExecStart=... ... ...
+... ... ...
+```
