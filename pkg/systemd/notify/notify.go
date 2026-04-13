@@ -11,7 +11,7 @@ import (
 
 // InitSystemdNotify initializes systemd notifications.
 //
-// It notifies systemd on each tick of interval with the string returned by callback.
+// It notifies systemd on every tick of the interval with the string returned by the callback.
 // Multiple lines in the returned string may be separated by '\n'.
 //
 // Returns an error if callback is nil, or if NOTIFY_SOCKET is unset (the process was not
@@ -58,7 +58,21 @@ func InitSystemdNotify(ctx context.Context, interval time.Duration, callback fun
 	return nil
 }
 
-// sendSocketNotify sends a message to the systemd notification socket by its address.
+// Send a notification to systemd.
+//
+// Multiple lines in the text may be separated by '\n'.
+//
+// Returns an error if NOTIFY_SOCKET is unset (the process was not started
+// by systemd with notification support) or if the socket writing failed.
+func Send(text string) error {
+	address := getValidAddress()
+	if address == "" {
+		return errors.New("NOTIFY_SOCKET is unset; not running under systemd with notifications")
+	}
+	return sendSocketNotify(address, "STATUS="+text+"\n")
+}
+
+// sendSocketNotify sends a message to the systemd notification socket at the specified address.
 func sendSocketNotify(address, message string) error {
 	socket, err := net.Dial("unixgram", address)
 	if err != nil {
@@ -70,14 +84,14 @@ func sendSocketNotify(address, message string) error {
 	return err
 }
 
-// getValidAddress returns systemd notification socket address.
+// getValidAddress returns the systemd notification socket address.
 func getValidAddress() string {
 	address := os.Getenv("NOTIFY_SOCKET")
 	if address == "" {
 		return ""
 	}
 
-	// Abstract namespace when starts with @ (replace with \x00)
+	// Abstract namespace addresses start with @ (replace with \x00)
 	if strings.HasPrefix(address, "@") {
 		address = "\x00" + address[1:]
 	}

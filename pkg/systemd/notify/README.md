@@ -1,7 +1,9 @@
 # systemd/notify
-Initializes systemd notifications for long-running services in Linux.
+Enables systemd notifications for long-running services on Linux.
 
 ## Example
+
+### Periodic Notifications
 ```go
 // Notify the OS about the process state every 10 seconds.
 err := notify.InitSystemdNotify(context.Background(), 10*time.Second, func() string {
@@ -35,3 +37,15 @@ Type=notify
 ExecStart=... ... ...
 ... ... ...
 ```
+
+### Send Once
+You can send a one-time notification instead of setting up the periodic ones:
+```go
+err := notify.Send("Hello there")
+if err != nil {
+	println("Unable to send systemd notification: " + err.Error())
+}
+```
+
+## Author
+https://github.com/maximal
